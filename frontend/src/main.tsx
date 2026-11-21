@@ -129,13 +129,13 @@ function Icon({ name }: { name: IconName }) {
   )
 }
 
-function Cards({ cards, folded }: { cards: string[]; folded?: boolean }) {
+function Cards({ cards, folded, slots = 2 }: { cards: string[]; folded?: boolean; slots?: number }) {
   return (
     <div className={`pocket ${folded ? 'folded' : ''}`}>
-      {[0, 1].map((i) => {
+      {Array.from({ length: slots }, (_, i) => {
         const card = cards[i]
         return (
-          <div key={i} className={`card ${card && 'hd'.includes(card[1]) ? 'red' : ''}`}>
+          <div key={i} className={`card ${card ? ('hd'.includes(card[1]) ? 'red' : '') : 'empty'}`}>
             {card ? (
               <>
                 <strong>{cardRank(card)}</strong>
@@ -147,6 +147,58 @@ function Cards({ cards, folded }: { cards: string[]; folded?: boolean }) {
           </div>
         )
       })}
+    </div>
+  )
+}
+
+const streetNames = ['Pre-flop', 'Pre-flop', 'Pre-flop', 'Flop', 'Turn', 'River']
+
+/** The community cards, laid out beside your own two. */
+function BoardCards({ board }: { board: string[] }) {
+  return (
+    <div className="board-strip" aria-label="Community cards">
+      <div className="mini-label">BOARD · {board.length >= 3 ? streetNames[board.length] : 'PRE-FLOP'}</div>
+      <div className="board-cards">
+        <Cards cards={board.slice(0, 3)} slots={3} />
+        <Cards cards={board.slice(3, 4)} slots={1} />
+        <Cards cards={board.slice(4, 5)} slots={1} />
+      </div>
+    </div>
+  )
+}
+
+/** Every opponent hand that is face up: all-in run-outs and showdowns. */
+function ShownHands({ state }: { state: State }) {
+  const result = state.result
+  const shown = state.players.filter((p) => p.id !== 0 && p.cards.length)
+  const mucked = result ? result.mucked.filter((seat) => seat !== 0) : []
+  if (!shown.length && !mucked.length) return null
+  return (
+    <div className="shown-hands" aria-label="Revealed hands">
+      {shown.map((p) => {
+        const winner = result?.winners.includes(p.id)
+        const chips = result?.payouts.find((x) => x.seat === p.id)?.chips
+        const rank = result?.hands.find((h) => h.seat === p.id)?.rank
+        return (
+          <div key={p.id} className={`shown-row ${winner ? 'winner' : ''}`}>
+            <Cards cards={p.cards} />
+            <div className="who">
+              <strong>{p.name}</strong>
+              {rank && <small>{rank}</small>}
+              {winner ? <small className="up">Wins {chips}</small> : result && <small>Loses</small>}
+            </div>
+          </div>
+        )
+      })}
+      {mucked.map((seat) => (
+        <div key={seat} className="shown-row mucked">
+          <Cards cards={[]} />
+          <div className="who">
+            <strong>{state.players[seat]?.name}</strong>
+            <small>Mucked</small>
+          </div>
+        </div>
+      ))}
     </div>
   )
 }
@@ -410,6 +462,7 @@ function Table({ gameId, leave }: { gameId: string; leave: (message?: string) =>
       {panel === 'thoughts' && <Thoughts state={state} close={() => setPanel(null)} />}
       {panel === 'tracker' && <Tracker state={state} close={() => setPanel(null)} />}
       <section className="dock">
+        <ShownHands state={state} />
         <div className="transcript" aria-live="polite">
           {connection === 'retrying' ? (
             <div>Reconnecting to the table…</div>
@@ -440,6 +493,7 @@ function Table({ gameId, leave }: { gameId: string; leave: (message?: string) =>
               {myRank && <small>{myRank}</small>}
             </div>
           </div>
+          <BoardCards board={state.board} />
           <div className="turn" aria-live="polite">
             <div className={`turn-status ${state.actor === 0 ? 'yours' : ''}`}>{status}</div>
             {state.match_over && summary && <small>{summary}</small>}
