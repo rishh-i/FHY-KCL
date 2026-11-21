@@ -1,4 +1,4 @@
-# The Last Table
+# The Last Table: Poker, A Social Experiment
 
 A single-player 3D Texas Hold'em trainer. You sit at a table with three to five AI opponents (Marlowe, Vega, Kit, Noor and Jules), play with the normal poker controls, and talk to the table through the microphone or the chat field. Each opponent keeps its own memory, reads on every other player and a playing style that drifts with the game. After each hand you can open the thought logs and see why each one acted, including when table talk changed a decision. The game uses fictional chips only.
 
