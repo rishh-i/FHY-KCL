@@ -11,7 +11,7 @@ type Recognition = {
         >
       }) => void)
     | null
-  onerror: (() => void) | null
+  onerror: ((e: { error?: string }) => void) | null
   onend: (() => void) | null
   start(): void
   stop(): void
@@ -69,9 +69,14 @@ export function useSpeech(send: (text: string) => void) {
         .trim()
       setFeedback(transcript)
     }
-    recognizer.onerror = () => {
+    recognizer.onerror = (e) => {
+      if (e?.error === 'no-speech' || e?.error === 'aborted') return
       failed = true
-      setFeedback('Voice recognition unavailable. Type your message below.')
+      setFeedback(
+        e?.error === 'not-allowed' || e?.error === 'service-not-allowed'
+          ? 'Microphone permission was denied. Allow it in the address bar, or type below.'
+          : 'Voice recognition unavailable. Type your message below.',
+      )
     }
     recognizer.onend = () => {
       active.current = null
