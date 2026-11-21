@@ -1,0 +1,10 @@
+Can AI master one of humanity's oldest social skills; The Art of Deception?
+
+This project explores how artificial intelligence remixes the art of bluffing in different ways, through the historical game of Poker.
+Players sit at a virtual 3D poker table against AI opponents that don't simply calculate probabilities, but they also interact, challenge opponent actions, and adapt to the rapidly changing situations.
+
+Using microphone/text input, players can interact directly with the AIs, attempting to mislead, persuade, or provoke them to make out-of-line decisions. Unlike common poker bots with fixed strategies, our AI models continuously adapt by developing and storing reads/information on both human and other AI opponents. By analysing previous betting patterns, conversations, and revealed hands, they can recognise tendencies, learn from mistakes, and adjust their strategies.
+
+We log each AI's actions alongside the factors and reads that influenced their decisions such as estimated hand strength, behaviour, previous interactions, and perceived bluffing patterns. Players can review these logs after the rounds and compare the reasoning with their own.
+
+By combining poker's cultural art of bluffing with conversational AI, adaptive learning, and explainable decision-making, The Last Table explores how machines interpret trust, uncertainty, and deception in a traditionally human social experience. It's not just about who has the best cards. It's about who can convince everyone else that they do.
